@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profit Mate - หน้าแรก</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .home-container {
+            max-width: 1050px;
+            margin: 0 auto;
+            padding-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- เอฟเฟกต์กาแลคซี่ดวงดาวระยิบระยับและดาวตก --- */
+        .galaxy-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkleStar var(--duration) infinite ease-in-out;
+            opacity: 0;
+        }
+
+        .star.glow {
+            background: #fff5f8;
+        }
+
+        @keyframes twinkleStar {
+            0%, 100% {
+                opacity: 0.1;
+                transform: scale(0.5);
+                box-shadow: 0 0 2px rgba(255, 255, 255, 0.1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.5);
+                box-shadow: 0 0 12px rgba(255, 42, 133, 0.9), 0 0 24px rgba(255, 255, 255, 1);
+            }
+        }
+
+        /* --- เอฟเฟกต์ดาวตก (Shooting Star) --- */
+        .shooting-star {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,1), rgba(255,42,133,0.8), transparent);
+            border-radius: 50%;
+            animation: shoot var(--shoot-duration) linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: translateX(0) translateY(0) rotate(-45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-700px) translateY(700px) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes cardGlowPulse {
+            0% { border-color: rgba(255, 42, 133, 0.3); box-shadow: 0 5px 20px rgba(0,0,0,0.5), 0 0 10px rgba(255, 42, 133, 0.1); }
+            50% { border-color: rgba(255, 42, 133, 0.9); box-shadow: 0 10px 35px rgba(255, 42, 133, 0.4), 0 0 25px rgba(255, 42, 133, 0.3); }
+            100% { border-color: rgba(255, 42, 133, 0.3); box-shadow: 0 5px 20px rgba(0,0,0,0.5), 0 0 10px rgba(255, 42, 133, 0.1); }
+        }
+
+        @keyframes floatIcon {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes btnShine {
+            0% { box-shadow: 0 0 20px rgba(255, 42, 133, 0.6); }
+            50% { box-shadow: 0 0 40px rgba(255, 42, 133, 1), 0 0 70px rgba(255, 117, 140, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(255, 42, 133, 0.6); }
+        }
+
+        @keyframes barGrowUp {
+            0% { height: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Hero Section แบบใหม่ คลีนและพรีเมียม */
+        .hero-section-new {
+            text-align: center;
+            padding: 10px 10px 25px 10px;
+            position: relative;
+        }
+
+        .hero-badge-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 42, 133, 0.15);
+            border: 1px solid rgba(255, 42, 133, 0.4);
+            color: #ff758c;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            box-shadow: 0 0 20px rgba(255, 42, 133, 0.2);
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 25px rgba(255, 42, 133, 0.5);
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, #ff2a85, #ff758c, #f1c40f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            color: #b5b5c7;
+            font-size: 1rem;
+            max-width: 780px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .btn-hero-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #ff2a85, #ff5e99);
+            color: #fff;
+            text-decoration: none;
+            padding: 15px 36px;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            animation: btnShine 2s infinite ease-in-out;
+            transition: all 0.3s ease;
+        }
+
+        .btn-hero-primary:hover {
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        /* --- Modern Glassmorphism & Neon Dashboard Analytics --- */
+        .analytics-card {
+            background: linear-gradient(145deg, rgba(22, 22, 30, 0.9), rgba(14, 14, 20, 0.95));
+            border: 1.5px solid rgba(255, 42, 133, 0.35);
+            border-radius: 24px;
+            padding: 25px 30px;
+            margin: 20px 0 30px 0;
+            text-align: left;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(255, 42, 133, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* กราฟแท่ง (คลีนๆ ไร้ข้อความกวนใจ) */
+        .chart-visual-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 160px;
+            padding: 10px 10px 5px 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chart-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            height: 100%;
+            justify-content: flex-end;
+            position: relative;
+        }
+
+        .modern-bar {
+            width: 28px;
+            border-radius: 8px 8px 4px 4px;
+            position: relative;
+            cursor: pointer;
+            animation: barGrowUp 1.5s cubic-bezier(0.1, 1, 0.1, 1) forwards;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modern-bar.pink-neon {
+            background: linear-gradient(180deg, #ff758c 0%, #ff2a85 100%);
+            box-shadow: 0 0 15px rgba(255, 42, 133, 0.5);
+        }
+        .modern-bar.pink-neon:hover {
+            transform: scaleY(1.05) scaleX(1.1);
+            box-shadow: 0 0 25px rgba(255, 42, 133, 0.9);
+            filter: brightness(1.2);
+        }
+
+        .modern-bar.yellow-neon {
+            background: linear-gradient(180deg, #f1c40f 0%, #f39c12 100%);
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
+        }
+        .modern-bar.yellow-neon:hover {
+            transform: scaleY(1.05) scaleX(1.1);
+            box-shadow: 0 0 25px rgba(241, 196, 15, 0.9);
+            filter: brightness(1.2);
+        }
+
+        /* ส่วนหัวข้อฟีเจอร์ */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            font-size: 1.35rem;
+            color: #fff;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(255, 42, 133, 0.4);
+        }
+
+        /* Grid การ์ดฟีเจอร์ */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .feature-card {
+            background: linear-gradient(145deg, #1c1c27, #15151e);
+            border-radius: 20px;
+            padding: 28px;
+            text-decoration: none;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 42, 133, 0.4);
+            animation: cardGlowPulse 4s infinite ease-in-out;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0s; }
+        .feature-card:nth-child(2) { animation-delay: 1s; }
+        .feature-card:nth-child(3) { animation-delay: 2s; }
+        .feature-card:nth-child(4) { animation-delay: 3s; }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: #ff2a85;
+            box-shadow: 0 0 15px #ff2a85;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            border-color: #ff2a85;
+            box-shadow: 0 15px 45px rgba(255, 42, 133, 0.6), 0 0 30px rgba(255, 42, 133, 0.5);
+        }
+
+        .feature-icon-box {
+            background: rgba(255, 42, 133, 0.2);
+            border: 2px solid rgba(255, 42, 133, 0.6);
+            border-radius: 16px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            box-shadow: 0 0 15px rgba(255, 42, 133, 0.4);
+            animation: floatIcon 3s infinite ease-in-out;
+        }
+
+        .feature-card:nth-child(2) .feature-icon-box { animation-delay: 0.5s; }
+        .feature-card:nth-child(3) .feature-icon-box { animation-delay: 1s; }
+        .feature-card:nth-child(4) .feature-icon-box { animation-delay: 1.5s; }
+
+        .feature-info h3 {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(255, 42, 133, 0.4);
+            transition: color 0.2s;
+        }
+
+        .feature-card:hover .feature-info h3 {
+            color: #ff758c;
+        }
+
+        .feature-info p {
+            color: #b5b5c7;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* บาร์สถิติภาพรวมล่างสุด */
+        .stats-bar {
+            background: #15151e;
+            border: 2px solid rgba(255, 42, 133, 0.3);
+            border-radius: 16px;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(255, 42, 133, 0.15);
+        }
+
+        .stat-item h4 {
+            color: #ff2a85;
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+            text-shadow: 0 0 10px rgba(255, 42, 133, 0.6);
+        }
+
+        .stat-item span {
+            color: #9999aa;
+            font-size: 0.85rem;
+        }
+
+        /* CSS สำหรับ Auth Modal เดิม */
+        .auth-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+        }
+        .user-profile-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #1c1c27;
+            padding: 6px 15px;
+            border-radius: 30px;
+            border: 1px solid #323242;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+        .btn-auth {
+            background: linear-gradient(135deg, #ff2a85, #ff5e99);
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 0 15px rgba(255, 42, 133, 0.4);
+            transition: 0.2s;
+        }
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(255, 42, 133, 0.8);
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .modal-card {
+            background: #1c1c27;
+            border: 2px solid #ff2a85;
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 40px rgba(255, 42, 133, 0.5);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px; right: 20px;
+            background: none; border: none;
+            color: #aaa; font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <!-- ชั้นฉากหลังเอฟเฟกต์กาแลคซี่ ดวงดาว และดาวตก -->
+    <div class="galaxy-background" id="galaxyBg"></div>
+
+    <aside>
+        <div>
+            <div class="logo-area">
+                <div class="logo">Profit Mate</div>
+            </div>
+            <nav>
+                <a href="home.html" class="active">🏠 หน้าแรก</a>
+                <a href="calculator.html">📊 คำนวณต้นทุน</a>
+                <a href="delivery.html">🛵 เดลิเวอรี่ & GP</a>
+                <a href="recipes.html">📜 สูตรขนม & เครื่องดื่ม</a>
+                <a href="shopee.html">🛒 ลิงก์ตะกร้า Shopee</a>
+                <a href="history.html">📑 ประวัติสูตรของฉัน</a>
+            </nav>
+        </div>
+        <div class="sidebar-footer">&copy; 2026 Profit Mate Elite</div>
+    </aside>
+
+    <main>
+        <!-- ส่วนหัวบนสุดสำหรับแสดงชื่อผู้ใช้ / ล็อกอิน -->
+        <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 25px;" id="topAuthArea">
+            <div class="auth-container" id="authNotLogin">
+                <button class="btn-auth" onclick="openAuthModal('login')">🔑 เข้าสู่ระบบ</button>
+                <button class="btn-auth" style="background: #282838; border: 1px solid #444;" onclick="openAuthModal('register')">📝 สมัครสมาชิก</button>
+            </div>
+            <div class="auth-container" id="authLoggedIn" style="display: none;">
+                <div class="user-profile-badge">
+                    <span>👋 สวัสดี, <b id="currentUserName" style="color: #ff758c;"></b></span>
+                </div>
+                <button class="btn-auth" style="background: rgba(255,75,75,0.2); border: 1px solid #ff4b4b; color: #ff6b6b;" onclick="logoutUser()">ออกจากระบบ</button>
+            </div>
+        </div>
+
+        <div class="home-container">
+            <!-- Hero Section แบบใหม่ คลีน ทันสมัย -->
+            <div class="hero-section-new">
+                <div class="hero-badge-top">
+                    ✨ ระบบผู้ช่วยอัจฉริยะยุคใหม่สำหรับผู้ประกอบการร้านค้า
+                </div>
+                <h1 class="hero-title">ยินดีต้อนรับสู่ <span>Profit Mate</span></h1>
+                <p class="hero-desc">
+                    แพลตฟอร์มผู้ช่วยอัจฉริยะที่จะช่วยให้คุณบริหารจัดการร้านค้าได้อย่างมืออาชีพ พร้อมระบบคำนวณต้นทุนวัตถุดิบและราคาขายอย่างแม่นยำ เช็คสถานะกำไร-ขาดทุน วิเคราะห์ค่า GP เดลิเวอรี่จากหลากหลายแพลตฟอร์ม และอำนวยความสะดวกในการค้นหาและเชื่อมโยงรายการสั่งซื้อวัตถุดิบตรงไปยังร้านค้าบน Shopee ได้อย่างรวดเร็ว ครบจบในที่เดียวเพื่อเพิ่มประสิทธิภาพสูงสุดให้กับธุรกิจของคุณ!
+                </p>
+            </div>
+
+            <!-- --- กราฟสถิติแบบพรีเมียม (เหลือแต่แท่งกราฟเนออนคลีนๆ) --- -->
+            <div class="analytics-card">
+                <!-- แท่งกราฟเนออน -->
+                <div class="chart-visual-box">
+                    <div class="chart-col">
+                        <div class="modern-bar pink-neon" style="height: 45%;"></div>
+                    </div>
+                    <div class="chart-col">
+                        <div class="modern-bar yellow-neon" style="height: 75%;"></div>
+                    </div>
+                    <div class="chart-col">
+                        <div class="modern-bar pink-neon" style="height: 55%;"></div>
+                    </div>
+                    <div class="chart-col">
+                        <div class="modern-bar yellow-neon" style="height: 90%;"></div>
+                    </div>
+                    <div class="chart-col">
+                        <div class="modern-bar pink-neon" style="height: 65%;"></div>
+                    </div>
+                    <div class="chart-col">
+                        <div class="modern-bar yellow-neon" style="height: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- --- จบส่วนกราฟ --- -->
+
+            <!-- ปุ่มเริ่มใช้งานตรงกลางเด่นชัด -->
+            <div style="text-align: center; margin-bottom: 45px;">
+                <a href="calculator.html" class="btn-hero-primary">
+                    ⚡ เริ่มใช้งานระบบคำนวณ
+                </a>
+            </div>
+
+            <!-- หัวข้อฟีเจอร์ -->
+            <div class="section-header">
+                <span>✨</span> ฟีเจอร์หลักภายในเว็บไซต์
+            </div>
+
+            <!-- การ์ดฟีเจอร์แบบ Grid -->
+            <div class="features-grid">
+                <a href="calculator.html" class="feature-card">
+                    <div class="feature-icon-box">📊</div>
+                    <div class="feature-info">
+                        <h3>คำนวณต้นทุนวัตถุดิบ</h3>
+                        <p>คำนวณต้นทุนต่อหน่วย เปรียบเทียบราคาซื้อกับปริมาณที่ใช้จริง พร้อมแจ้งเตือนสถานะกำไร-ขาดทุนอัตโนมัติ</p>
+                    </div>
+                </a>
+
+                <a href="delivery.html" class="feature-card">
+                    <div class="feature-icon-box">🛵</div>
+                    <div class="feature-info">
+                        <h3>ค่าเดลิเวอรี่ & GP</h3>
+                        <p>คำนวณการหักค่า GP จากแอปฟู้ดเดลิเวอรี่ และยิงยอดการตลาดเพื่อให้กำไรสุทธิที่แท้จริง</p>
+                    </div>
+                </a>
+
+                <a href="recipes.html" class="feature-card">
+                    <div class="feature-icon-box">📜</div>
+                    <div class="feature-info">
+                        <h3>คลังสูตรขนม & ต้นทุน</h3>
+                        <p>รวมสูตรขนมทำง่าย พร้อมวิเคราะห์ต้นทุนเบื้องต้น สำหรับคนที่ไม่รู้ว่าจะเริ่มทำขนมอะไรดี</p>
+                    </div>
+                </a>
+
+                <a href="shopee.html" class="feature-card">
+                    <div class="feature-icon-box">🛒</div>
+                    <div class="feature-info">
+                        <h3>ลิงก์ตะกร้า Shopee</h3>
+                        <p>ระบบแปลงและสร้างลิงก์พิกัดวัตถุดิบ เพื่อให้ลูกค้าสนใจกดปุ่มเด้งเข้าแอป Shopee สั่งซื้อได้ทันที</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- บาร์สถิติภาพรวม -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <h4>100%</h4>
+                    <span>ใช้งานฟรี ไม่มีค่าใช้จ่าย</span>
+                </div>
+                <div class="stat-item">
+                    <h4>4 ฟีเจอร์</h4>
+                    <span>ครอบคลุมทุกระบบร้านค้า</span>
+                </div>
+                <div class="stat-item">
+                    <h4>Local Storage</h4>
+                    <span>บันทึกข้อมูลปลอดภัยบนเครื่องคุณ</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal ล็อกอิน / สมัครสมาชิก -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            <h2 id="modalTitle" style="color: #fff; margin-bottom: 20px; font-size: 1.3rem;">เข้าสู่ระบบ</h2>
+            
+            <div id="registerFields" style="display: none; margin-bottom: 15px;">
+                <label style="color: #aaa; font-size: 0.85rem; display: block; margin-bottom: 5px;">ชื่อผู้ใช้ / ชื่อร้าน</label>
+                <input type="text" id="regName" class="shopee-input" style="width:100%; padding:10px; background:#101017; border:1px solid #323242; border-radius:8px; color:#fff;" placeholder="ระบุชื่อของคุณ">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="color: #aaa; font-size: 0.85rem; display: block; margin-bottom: 5px;">อีเมล หรือ ชื่อผู้ใช้</label>
+                <input type="text" id="loginEmailOrName" class="shopee-input" style="width:100%; padding:10px; background:#101017; border:1px solid #323242; border-radius:8px; color:#fff;" placeholder="ระบุอีเมลหรือชื่อผู้ใช้">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="color: #aaa; font-size: 0.85rem; display: block; margin-bottom: 5px;">รหัสผ่าน</label>
+                <input type="password" id="loginPass" class="shopee-input" style="width:100%; padding:10px; background:#101017; border:1px solid #323242; border-radius:8px; color:#fff;" placeholder="รหัสผ่านของคุณ">
+            </div>
+
+            <button id="authSubmitBtn" class="btn-hero-primary" style="width: 100%; justify-content: center;" onclick="submitAuthAction()">ยืนยัน</button>
+        </div>
+    </div>
+
+    <!-- Script สร้างดวงดาวระยิบระยับ และดาวตกอัตโนมัติ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const galaxyBg = document.getElementById('galaxyBg');
+            
+            // 1. สร้างดวงดาวระยิบระยับ (160 ดวง)
+            const numberOfStars = 160; 
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                const isGlow = Math.random() > 0.7;
+                star.className = isGlow ? 'star glow' : 'star';
+                
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+
+                const size = Math.random() * 2.5 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+
+                const duration = Math.random() * 3.5 + 1.5;
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.animationDelay = `${Math.random() * 5}s`;
+
+                galaxyBg.appendChild(star);
+            }
+
+            // 2. สร้างดาวตก (Shooting Stars) ทะยานเฉียงพาดผ่านจอ
+            const numberOfShootingStars = 6;
+            for (let j = 0; j < numberOfShootingStars; j++) {
+                const shootStar = document.createElement('div');
+                shootStar.className = 'shooting-star';
+
+                // สุ่มตำแหน่งเริ่มต้นด้านบนขวา
+                shootStar.style.top = `${Math.random() * 50}%`;
+                shootStar.style.left = `${Math.random() * 50 + 50}%`;
+
+                // สุ่มความยาวหางดาวตก (80px ถึง 160px)
+                const shootLength = Math.random() * 80 + 80;
+                shootStar.style.width = `${shootLength}px`;
+
+                // สุ่มความเร็วในการพุ่ง (2 วินาที ถึง 5 วินาที)
+                const shootDuration = Math.random() * 3 + 2;
+                shootStar.style.setProperty('--shoot-duration', `${shootDuration}s`);
+
+                // สุ่มดีเลย์เวลาเกิดดาวตก
+                const shootDelay = Math.random() * 6;
+                shootStar.style.animationDelay = `${shootDelay}s`;
+
+                galaxyBg.appendChild(shootStar);
+            }
+
+            checkLoginStatus();
+        });
+
+        let currentAuthMode = 'login';
+
+        function checkLoginStatus() {
+            const loggedUser = JSON.parse(localStorage.getItem('profitMateLoggedInUser'));
+            const authNotLogin = document.getElementById('authNotLogin');
+            const authLoggedIn = document.getElementById('authLoggedIn');
+            const currentUserName = document.getElementById('currentUserName');
+
+            if (loggedUser) {
+                authNotLogin.style.display = 'none';
+                authLoggedIn.style.display = 'flex';
+                currentUserName.textContent = loggedUser.name || loggedUser.email;
+            } else {
+                authNotLogin.style.display = 'flex';
+                authLoggedIn.style.display = 'none';
+            }
+        }
+
+        function openAuthModal(mode) {
+            currentAuthMode = mode;
+            const modal = document.getElementById('authModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const registerFields = document.getElementById('registerFields');
+            const submitBtn = document.getElementById('authSubmitBtn');
+
+            modal.style.display = 'flex';
+
+            if (mode === 'register') {
+                modalTitle.textContent = 'สมัครสมาชิกใหม่';
+                registerFields.style.display = 'block';
+                submitBtn.textContent = 'สมัครสมาชิก';
+            } else {
+                modalTitle.textContent = 'เข้าสู่ระบบ';
+                registerFields.style.display = 'none';
+                submitBtn.textContent = 'เข้าสู่ระบบ';
+            }
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+
+        function submitAuthAction() {
+            const emailOrName = document.getElementById('loginEmailOrName').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            let usersList = JSON.parse(localStorage.getItem('profitMateUsersList') || '[]');
+
+            if (!emailOrName || !pass) {
+                alert("กรุณากรอกข้อมูลให้ครบถ้วนครับ!");
+                return;
+            }
+
+            if (currentAuthMode === 'register') {
+                const name = document.getElementById('regName').value.trim();
+                if (!name) {
+                    alert("กรุณากรอกชื่อผู้ใช้ด้วยครับ!");
+                    return;
+                }
+
+                const exists = usersList.find(u => u.email === emailOrName || u.name === emailOrName);
+                if (exists) {
+                    alert("ชื่อผู้ใช้หรืออีเมลนี้มีอยู่ในระบบแล้ว!");
+                    return;
+                }
+
+                const newUser = { name: name, email: emailOrName, pass: pass };
+                usersList.push(newUser);
+                localStorage.setItem('profitMateUsersList', JSON.stringify(usersList));
+                localStorage.setItem('profitMateLoggedInUser', JSON.stringify(newUser));
+
+                alert("สมัครสมาชิกและเข้าสู่ระบบสำเร็จ!");
+                closeAuthModal();
+                checkLoginStatus();
+            } else {
+                const foundUser = usersList.find(u => (u.email === emailOrName || u.name === emailOrName) && u.pass === pass);
+                if (foundUser) {
+                    localStorage.setItem('profitMateLoggedInUser', JSON.stringify(foundUser));
+                    alert(`เข้าสู่ระบบสำเร็จ! ยินดีต้อนรับคุณ ${foundUser.name}`);
+                    closeAuthModal();
+                    checkLoginStatus();
+                } else {
+                    alert("อีเมล/ชื่อผู้ใช้ หรือ รหัสผ่านไม่ถูกต้อง! กรุณาลองใหม่อีกครั้ง");
+                }
+            }
+        }
+
+        let logoutUser = function() {
+            if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
+                localStorage.removeItem('profitMateLoggedInUser');
+                checkLoginStatus();
+                alert("ออกจากระบบเรียบร้อยแล้วครับ");
+            }
+        }
+    </script>
+</body>
+</html>

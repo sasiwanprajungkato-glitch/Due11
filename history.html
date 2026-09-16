@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profit Mate - ประวัติสูตรของฉัน</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            position: relative;
+            overflow-x: hidden;
+            background-color: #0c0c12;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* พื้นหลังกาแล็กซี่ดวงดาว */
+        .galaxy-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            background-image: 
+                radial-gradient(2px 2px at 25px 35px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 80px, rgba(255,255,255,0.7), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 100px 50px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 180px 140px, rgba(0, 255, 204, 0.7), rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 250px 220px, #ff2a85, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 380px 300px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 480px 160px, rgba(255,255,255,0.6), rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 580px 380px, #00ffcc, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 680px 90px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 780px 270px, rgba(255, 42, 133, 0.8), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 880px 400px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 980px 190px, #00ffcc, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 1000px 500px;
+            opacity: 0.6;
+        }
+
+        aside {
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 40px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 950px;
+        }
+
+        @keyframes neonPulse {
+            0% {
+                color: #ff2a85;
+                text-shadow: 0 0 5px rgba(255, 42, 133, 0.4), 0 0 15px rgba(255, 42, 133, 0.2), 0 0 25px rgba(255, 42, 133, 0.1);
+            }
+            50% {
+                color: #ff66a3;
+                text-shadow: 0 0 10px rgba(255, 102, 163, 0.8), 0 0 25px rgba(255, 42, 133, 0.6), 0 0 40px rgba(255, 42, 133, 0.4);
+            }
+            100% {
+                color: #ff2a85;
+                text-shadow: 0 0 5px rgba(255, 42, 133, 0.4), 0 0 15px rgba(255, 42, 133, 0.2), 0 0 25px rgba(255, 42, 133, 0.1);
+            }
+        }
+
+        .neon-title-animated {
+            animation: neonPulse 2.5s infinite ease-in-out;
+        }
+
+        .recipe-card {
+            background: linear-gradient(145deg, rgba(20, 21, 31, 0.95), rgba(30, 31, 46, 0.9));
+            border: 1px solid rgba(255, 42, 133, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 25px;
+            color: #fff;
+            text-align: left;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recipe-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #ff2a85, #00ffcc);
+        }
+
+        .recipe-grid-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: rgba(12, 12, 18, 0.6);
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #9494a0;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* ตารางแสดงวัตถุดิบย่อย */
+        .ingredient-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: rgba(12, 12, 18, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ingredient-table th {
+            background: rgba(255, 42, 133, 0.15);
+            color: #ff758c;
+            font-size: 0.85rem;
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .ingredient-table td {
+            padding: 10px 12px;
+            font-size: 0.88rem;
+            color: #ddd;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .ingredient-table tr:last-child td {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="galaxy-background"></div>
+
+    <aside>
+        <div>
+            <div class="logo-area">
+                <div class="logo">PROFIT MATE</div>
+            </div>
+            <nav>
+                <a href="index.html.html">🏠 หน้าแรก</a>
+                <a href="calculator.html">📊 คำนวณต้นทุน</a>
+                <a href="delivery.html">🛵 เดลิเวอรี่ & GP</a>
+                <a href="recipes.html">📜 สูตรขนม & เครื่องดื่ม</a>
+                <a href="shopee.html">🛒 ลิงก์ตะกร้า Shopee</a>
+                <a href="history.html" class="active">📑 ประวัติสูตรของฉัน</a>
+            </nav>
+        </div>
+        <div class="sidebar-footer">&copy; 2026 Profit Mate Elite</div>
+    </aside>
+
+    <main>
+        <div class="content-wrapper">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
+                <div>
+                    <h1 class="neon-title-animated" style="font-size: 1.8rem; font-weight: 700; margin: 0 0 8px 0; display: flex; align-items: center; gap: 10px;">
+                        📑 ประวัติสูตรของฉัน
+                    </h1>
+                    <p style="color: #9494a0; font-size: 0.95rem; margin: 0;">รวมรายการสูตรและรายละเอียดวัตถุดิบที่คุณเคยบันทึกไว้ทั้งหมด</p>
+                </div>
+                
+                <button onclick="clearAllHistory()" style="background: rgba(20, 21, 31, 0.9); color: #ff5252; border: 1px solid rgba(255, 82, 82, 0.3); padding: 10px 18px; border-radius: 12px; font-size: 0.88rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); flex-shrink: 0;" onmouseover="this.style.background='rgba(255, 82, 82, 0.15)'" onmouseout="this.style.background='rgba(20, 21, 31, 0.9)'">
+                    🗑️ ล้างประวัติทั้งหมด
+                </button>
+            </div>
+
+            <div id="historyContent" style="width: 100%;">
+                <div style="background: rgba(20, 21, 31, 0.95); border: 1px solid #232433; border-radius: 16px; padding: 60px 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">📂</div>
+                    <p style="color: #888898; font-size: 1rem; margin-bottom: 25px; line-height: 1.6;">
+                        ยังไม่มีประวัติสูตรขนมที่บันทึกไว้<br>
+                        ลองไปที่หน้า <strong style="color: #fff;">"คำนวณต้นทุน"</strong> แล้วกดบันทึกสูตรสิครับ!
+                    </p>
+                    <a href="calculator.html" style="background: linear-gradient(135deg, #ff2a85, #e61e74); color: #fff; padding: 12px 28px; border-radius: 12px; text-decoration: none; font-size: 0.95rem; font-weight: 600; display: inline-block; box-shadow: 0 4px 20px rgba(255, 42, 133, 0.4);">
+                        ไปหน้าคำนวณต้นทุน
+                    </a>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 50px; color: #555566; font-size: 0.82rem;">
+                Profit Mate - แพลตฟอร์มคำนวณต้นทุนเพื่อผู้ประกอบการยุคใหม่
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('historyContent');
+            const savedRecipes = JSON.parse(localStorage.getItem('profitMateRecipes')) || [];
+
+            if (savedRecipes.length === 0) {
+                return;
+            }
+
+            let htmlContent = '';
+            savedRecipes.forEach((recipe, index) => {
+                // แปลงหน่วยภาษาอังกฤษให้เป็นภาษาไทยอ่านง่าย
+                const unitMap = {
+                    'gram': 'กรัม',
+                    'ml': 'มิลลิลิตร',
+                    'piece': 'ชิ้น',
+                    'luuk': 'ลูก',
+                    'foong': 'ฟอง',
+                    'tablespoon': 'ช้อนโต๊ะ',
+                    'teaspoon': 'ช้อนชา',
+                    'pack': 'ซอง / ห่อ',
+                    'cup': 'ถ้วยตวง'
+                };
+
+                // สร้างตารางรายชื่อวัตถุดิบ
+                let ingredientsRows = '';
+                if (recipe.ingredients && recipe.ingredients.length > 0) {
+                    recipe.ingredients.forEach(item => {
+                        const unitText = unitMap[item.unit] || item.unit;
+                        ingredientsRows += `
+                            <tr>
+                                <td>${item.name || '-'}</td>
+                                <td>${item.qty || 0} ${unitText}</td>
+                                <td style="text-align: right; color: #00ffcc;">${item.price || 0} บาท</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    ingredientsRows = `<tr><td colspan="3" style="text-align: center; color: #777;">ไม่มีข้อมูลวัตถุดิบ</td></tr>`;
+                }
+
+                htmlContent += `
+                    <div class="recipe-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="color: #ff2a85; margin: 0; font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                                🧁 ${recipe.name || 'สูตรอาหาร/เบเกอรี่'}
+                            </h3>
+                            <span style="background: rgba(255, 42, 133, 0.15); color: #ff758c; padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(255, 42, 133, 0.3);">
+                                รายการที่ ${index + 1} (ผลิตได้ ${recipe.yield || 1} ชิ้น)
+                            </span>
+                        </div>
+
+                        <div class="recipe-grid-info">
+                            <div class="info-item">
+                                <span class="info-label">💰 ต้นทุนรวมทั้งหมด</span>
+                                <span class="info-value" style="color: #ffffff;">${recipe.totalCost || 0} บาท</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">📊 ต้นทุนเฉลี่ยต่อชิ้น</span>
+                                <span class="info-value" style="color: #00ffcc;">${recipe.costPerUnit || 0} บาท</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">🏷️ ราคาขายแนะนำ</span>
+                                <span class="info-value" style="color: #ffb74d;">${recipe.sellingPrice || 0} บาท</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 15px;">
+                            <span style="font-size: 0.9rem; color: #aaa; font-weight: 600; display: block; margin-bottom: 8px;">🛒 รายการวัตถุดิบที่ใช้:</span>
+                            <table class="ingredient-table">
+                               <thead>
+                                   <tr>
+                                       <th>ชื่อวัตถุดิบ</th>
+                                       <th>ปริมาณ</th>
+                                       <th style="text-align: right;">ราคา</th>
+                                   </tr>
+                               </thead>
+                               <tbody>
+                                   ${ingredientsRows}
+                               </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = htmlContent;
+        });
+
+        function clearAllHistory() {
+            if (confirm('คุณต้องการล้างประวัติสูตรทั้งหมดใช่หรือไม่?')) {
+                localStorage.removeItem('profitMateRecipes');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

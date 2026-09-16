@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profit Mate - สร้างปุ่มลิงก์ Shopee</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .shopee-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .shopee-card {
+            background: linear-gradient(145deg, #1c1c27, #15151e);
+            border: 2px solid #ff2a85;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(255, 42, 133, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ff758c;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .shopee-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: #101017;
+            border: 2px solid #323242;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .shopee-input:focus {
+            border-color: #ff2a85;
+            box-shadow: 0 0 15px rgba(255, 42, 133, 0.3);
+        }
+
+        .btn-shopee-action {
+            background: linear-gradient(135deg, #ff2a85, #ff5e99);
+            color: #fff;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(255, 42, 133, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-shopee-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 42, 133, 0.6);
+        }
+
+        /* ส่วนแสดงผลพรีวิวตัวอย่าง */
+        .preview-box-container {
+            margin-top: 25px;
+            padding: 25px;
+            background: #111118;
+            border: 2px dashed #ff2a85;
+            border-radius: 16px;
+            display: none;
+            text-align: center;
+        }
+
+        .preview-title {
+            color: #00ffcc;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .real-product-card {
+            background: #1c1c27;
+            border: 1px solid #323242;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 320px;
+            margin: 0 auto;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .product-card-name {
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .btn-shopee-buy {
+            background: #ee4d2d; /* สีส้ม Shopee แท้ */
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 15px rgba(238, 77, 45, 0.4);
+            transition: background 0.2s;
+        }
+        .btn-shopee-buy:hover {
+            background: #d73a1a;
+        }
+
+        /* ตารางประวัติ */
+        .history-section-title {
+            color: #fff;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .history-table th {
+            background: #1c1c27;
+            color: #ff758c;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 0.85rem;
+            border-bottom: 2px solid #323242;
+        }
+        .history-table td {
+            padding: 14px 15px;
+            color: #cfcfdc;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #1a1a24;
+            vertical-align: middle;
+        }
+        .empty-history {
+            text-align: center;
+            color: #777;
+            padding: 25px;
+            font-size: 0.9rem;
+        }
+
+        .btn-delete-single {
+            background: rgba(255, 75, 75, 0.15);
+            border: 1px solid #ff4b4b;
+            color: #ff6b6b;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        .btn-delete-single:hover {
+            background: #ff4b4b;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div>
+            <div class="logo-area">
+                <div class="logo">Profit Mate</div>
+            </div>
+            <nav>
+                <a href="index.html.html">🏠 หน้าแรก</a>
+                <a href="calculator.html">📊 คำนวณต้นทุน</a>
+                <a href="delivery.html">🛵 เดลิเวอรี่ & GP</a>
+                <a href="recipes.html">📜 สูตรขนม & เครื่องดื่ม</a>
+                <a href="shopee.html" class="active">🛒 ลิงก์ตะกร้า Shopee</a>
+                <a href="history.html">📑 ประวัติสูตรของฉัน</a>
+            </nav>
+        </div>
+        <div class="sidebar-footer">&copy; 2026 Profit Mate Elite</div>
+    </aside>
+
+    <main>
+        <div class="shopee-container">
+            <h1 style="color: #fff; margin-bottom: 8px; font-size: 1.8rem;">สร้างปุ่มคลิกเดียวเด้งเข้าหน้าค้นหา Shopee</h1>
+            <p style="color: #aaa; margin-bottom: 25px; font-size: 0.95rem;">พิมพ์ชื่อหมวดหมู่และคำค้นหา เพื่อสร้างปุ่มกดเด้งไปหน้า Shopee รวมสินค้าหลายยี่ห้อได้ทันที</p>
+
+            <div class="shopee-card">
+                <div class="form-group">
+                    <label>ชื่อปุ่มหมวดหมู่สินค้า</label>
+                    <input type="text" id="categoryNameInput" class="shopee-input" placeholder="เช่น แป้งทำขนม (รวมทุกยี่ห้อ)">
+                </div>
+
+                <div class="form-group">
+                    <label>คำค้นหาใน Shopee (พิมพ์คำสั้นๆ เช่น แป้งทำขนม, เนยสด)</label>
+                    <input type="text" id="shopeeSearchKeyword" class="shopee-input" placeholder="เช่น แป้งทำขนม">
+                </div>
+
+                <button class="btn-shopee-action" onclick="generateCategoryCard()">
+                    ✨ สร้างปุ่มกดเด้งเข้า Shopee
+                </button>
+
+                <!-- ส่วนแสดงผลพรีวิวตัวอย่าง -->
+                <div id="previewBox" class="preview-box-container">
+                    <div class="preview-title">🚀 ตัวอย่างปุ่มใช้งานจริง (พอกดปุ่มส้มจะเด้งไปหน้า Shopee ทันที)</div>
+                    
+                    <div class="real-product-card">
+                        <div id="previewCardName" class="product-card-name">ชื่อหมวดหมู่</div>
+                        <a id="previewCardBtn" href="#" target="_blank" class="btn-shopee-buy">
+                            🛒 ไปที่ Shopee (รวมหลายยี่ห้อ)
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ประวัติการสร้าง -->
+            <div class="shopee-card">
+                <div class="history-section-title">
+                    <span>📜 ประวัติการสร้างปุ่มหมวดหมู่ Shopee</span>
+                    <button onclick="clearHistory()" style="background: transparent; border: 1px solid #444; color: #aaa; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">ล้างประวัติทั้งหมด</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>ชื่อหมวดหมู่</th>
+                                <th>คำค้นหา Shopee</th>
+                                <th style="text-align: center;">ทดสอบกด</th>
+                                <th style="text-align: center;">ลบ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <tr>
+                                <td colspan="4" class="empty-history">ยังไม่มีประวัติการสร้างในขณะนี้</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHistory();
+        });
+
+        function generateCategoryCard() {
+            const categoryName = document.getElementById('categoryNameInput').value.trim();
+            const keyword = document.getElementById('shopeeSearchKeyword').value.trim();
+
+            if (!categoryName) {
+                alert("กรุณากรอกชื่อปุ่มหมวดหมู่สินค้าครับ!");
+                document.getElementById('categoryNameInput').focus();
+                return;
+            }
+            if (!keyword) {
+                alert("กรุณากรอกคำค้นหาสำหรับ Shopee เช่น 'แป้งทำขนม' ด้วยครับ!");
+                document.getElementById('shopeeSearchKeyword').focus();
+                return;
+            }
+
+            // สร้างลิงก์ค้นหา Shopee จากคำสั้นๆ
+            const shopeeSearchUrl = `https://shopee.co.th/search?keyword=${encodeURIComponent(keyword)}`;
+
+            // แสดงพรีวิว
+            const previewBox = document.getElementById('previewBox');
+            previewBox.style.display = "block";
+
+            document.getElementById('previewCardName').textContent = categoryName;
+            document.getElementById('previewCardBtn').href = shopeeSearchUrl;
+
+            // บันทึกลงประวัติ
+            saveToHistory(categoryName, keyword, shopeeSearchUrl);
+            loadHistory();
+        }
+
+        function saveToHistory(name, keyword, url) {
+            let history = JSON.parse(localStorage.getItem('shopee_minimal_history') || '[]');
+            history.unshift({ name: name, keyword: keyword, url: url });
+            if (history.length > 20) history.pop();
+            localStorage.setItem('shopee_minimal_history', JSON.stringify(history));
+        }
+
+        function loadHistory() {
+            let history = JSON.parse(localStorage.getItem('shopee_minimal_history') || '[]');
+            const tbody = document.getElementById('historyTableBody');
+
+            if (history.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="empty-history">ยังไม่มีประวัติการสร้างในขณะนี้</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = history.map((item, index) => `
+                <tr>
+                    <td><b>${item.name}</b></td>
+                    <td style="color: #ff758c;">${item.keyword}</td>
+                    <td style="text-align: center;">
+                        <a href="${item.url}" target="_blank" style="background: #ee4d2d; color: #fff; padding: 6px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.85rem; display: inline-block;">🛒 ไปที่ Shopee</a>
+                    </td>
+                    <td style="text-align: center;">
+                        <button class="btn-delete-single" onclick="deleteItem(${index})">🗑️ ลบ</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteItem(index) {
+            let history = JSON.parse(localStorage.getItem('shopee_minimal_history') || '[]');
+            history.splice(index, 1);
+            localStorage.setItem('shopee_minimal_history', JSON.stringify(history));
+            loadHistory();
+        }
+
+        function clearHistory() {
+            let history = JSON.parse(localStorage.getItem('shopee_minimal_history') || '[]');
+            if (history.length === 0) return;
+            
+            if (confirm("คุณต้องการล้างประวัติทั้งหมดใช่หรือไม่?")) {
+                localStorage.removeItem('shopee_minimal_history');
+                loadHistory();
+            }
+        }
+    </script>
+</body>
+</html>

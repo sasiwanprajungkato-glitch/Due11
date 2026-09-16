@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profit Mate - เดลิเวอรี่ & GP</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .calc-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-bottom: 50px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* เอฟเฟกต์กาแลคซี่ฉากหลัง + ดาวตก + กระต่าย */
+        .galaxy-background {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; overflow: hidden; z-index: 1;
+        }
+        .star {
+            position: absolute; background: #fff; border-radius: 50%;
+            animation: twinkleStar var(--duration) infinite ease-in-out; opacity: 0;
+        }
+        @keyframes twinkleStar {
+            0%, 100% { opacity: 0.1; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.6); box-shadow: 0 0 12px #ff2a85; }
+        }
+
+        .shooting-star {
+            position: absolute; height: 2px;
+            background: linear-gradient(90deg, #fff, rgba(255,42,133,1), transparent);
+            border-radius: 50px; animation: shoot var(--shoot-duration) linear infinite; opacity: 0;
+        }
+        @keyframes shoot {
+            0% { transform: translateX(0) translateY(0) rotate(-45deg); opacity: 1; }
+            100% { transform: translateX(-800px) translateY(800px) rotate(-45deg); opacity: 0; }
+        }
+
+        .jumping-bunny {
+            position: absolute; font-size: 28px;
+            animation: bunnyJump var(--jump-duration) ease-in-out infinite;
+            z-index: 2; pointer-events: none;
+            filter: drop-shadow(0 0 8px rgba(255,42,133,0.8));
+        }
+        @keyframes bunnyJump {
+            0%, 100% { transform: translateY(0) scale(1, 1); }
+            30% { transform: translateY(-40px) scale(0.9, 1.1); }
+            50% { transform: translateY(-55px) scale(1.1, 0.9); }
+            70% { transform: translateY(0) scale(1.2, 0.8); }
+        }
+
+        /* หัวข้อหลักแบบเคลื่อนไหว: ใส่เส้นแสงวิ่งวนรอบกรอบ + เอฟเฟกต์ขยับเด้ง */
+        .header-beam-box {
+            position: relative;
+            padding: 22px 30px;
+            border-radius: 20px;
+            background: linear-gradient(145deg, rgba(28,28,39,0.95), rgba(20,20,28,0.95));
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: 0 0 25px rgba(255, 42, 133, 0.4);
+            animation: floatHeader 4s ease-in-out infinite;
+        }
+        @keyframes floatHeader {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .header-beam-box::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent, transparent, transparent, #ffd700, #ff2a85);
+            animation: rotateBeam 4s linear infinite;
+            z-index: 0;
+            opacity: 0.8;
+        }
+        .header-beam-box::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            background: linear-gradient(145deg, rgba(28,28,39,0.98), rgba(20,20,28,0.98));
+            border-radius: 17px;
+            z-index: 1;
+        }
+        .header-content-inner {
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-header-title {
+            font-size: 2.2rem; font-weight: 700;
+            background: linear-gradient(135deg, #fff 20%, #ff758c 60%, #ff2a85 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(255, 42, 133, 0.6); margin-bottom: 8px;
+            display: inline-block;
+            animation: titlePulse 2.5s ease-in-out infinite;
+        }
+        @keyframes titlePulse {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(255,42,133,0.5)); }
+            50% { filter: drop-shadow(0 0 18px rgba(255,42,133,0.9)); }
+        }
+
+        .main-header-desc {
+            color: #d1d1e0; font-size: 0.98rem;
+            text-shadow: 0 0 10px rgba(255, 42, 133, 0.3);
+        }
+
+        /* กรอบเรืองแสงทั่วไป */
+        .section-box, .result-sub-box {
+            background: linear-gradient(145deg, rgba(28,28,39,0.95), rgba(20,20,28,0.95));
+            border: 2px solid #ff2a85; border-radius: 20px;
+            padding: 25px; margin-bottom: 25px;
+            box-shadow: 0 0 25px rgba(255, 42, 133, 0.5), inset 0 0 15px rgba(255, 42, 133, 0.2);
+            transition: all 0.3s ease;
+        }
+        .section-box:hover, .result-sub-box:hover {
+            box-shadow: 0 0 40px rgba(255, 42, 133, 0.8), inset 0 0 25px rgba(255, 42, 133, 0.4);
+            border-color: #ff5e99;
+        }
+
+        /* เส้นแสงวิ่งวนรอบกรอบผลวิเคราะห์กำไร */
+        .chart-frame-glow {
+            position: relative;
+            overflow: hidden;
+        }
+        .chart-frame-glow::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent, transparent, transparent, #ffd700, #ff2a85);
+            animation: rotateBeam 4s linear infinite;
+            z-index: 0;
+            opacity: 0.7;
+        }
+        .chart-frame-glow::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            background: linear-gradient(145deg, rgba(28,28,39,0.98), rgba(20,20,28,0.98));
+            border-radius: 17px;
+            z-index: 1;
+        }
+        .chart-frame-glow > * {
+            position: relative;
+            z-index: 2;
+        }
+        @keyframes rotateBeam {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .section-title {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 1.25rem; color: #fff; font-weight: 600;
+            margin-bottom: 20px; text-shadow: 0 0 12px rgba(255,42,133,0.8);
+        }
+
+        /* แพลตฟอร์ม Selector Tabs ดีไซน์พรีเมียมเทียบเท่า Shopee */
+        .platform-tabs {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;
+        }
+        .platform-tab {
+            background: rgba(16, 16, 23, 0.9);
+            border: 2px solid rgba(255, 42, 133, 0.4); border-radius: 15px;
+            padding: 18px 12px; text-align: center; cursor: pointer; transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(255, 42, 133, 0.15);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+            min-height: 140px;
+        }
+        .platform-tab:hover {
+            border-color: #ff2a85; box-shadow: 0 0 22px rgba(255, 42, 133, 0.6);
+            transform: translateY(-4px);
+        }
+        .platform-tab.active {
+            background: linear-gradient(135deg, rgba(255, 42, 133, 0.25), rgba(20, 20, 28, 0.95));
+            border-color: #ff2a85; box-shadow: 0 0 28px rgba(255, 42, 133, 0.85);
+        }
+
+        /* จัดแต่งโลโก้ SVG แบรนด์ต่างๆ */
+        .brand-logo-container {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2px;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.4));
+        }
+        .platform-tab h3 { color: #fff; font-size: 1.05rem; margin: 0; text-shadow: 0 0 8px rgba(255,42,133,0.6); font-weight: 700; letter-spacing: 0.5px; }
+        .platform-tab span { color: #ccc; font-size: 0.78rem; background: rgba(255,255,255,0.08); padding: 3px 8px; border-radius: 6px; }
+
+        .shopee-input {
+            width: 100%; padding: 12px 15px;
+            background: #101017; border: 1.5px solid rgba(255,42,133,0.4);
+            border-radius: 10px; color: #fff; font-size: 0.95rem; transition: all 0.3s;
+            box-shadow: 0 0 8px rgba(255,42,133,0.1);
+        }
+        .shopee-input:focus {
+            border-color: #ff2a85; outline: none; box-shadow: 0 0 20px rgba(255, 42, 133, 0.8);
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #ff2a85, #ff5e99);
+            color: #fff; border: none; padding: 12px 25px;
+            border-radius: 12px; cursor: pointer; font-weight: 600;
+            box-shadow: 0 0 25px rgba(255,42,133,0.7); transition: 0.3s;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5); width: 100%; font-size: 1.05rem;
+        }
+        .btn-action:hover { transform: translateY(-3px); box-shadow: 0 0 35px rgba(255,42,133,1); }
+
+        /* ผลลัพธ์รายละเอียด */
+        .result-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ddd; font-size: 0.98rem;
+        }
+        .result-row:last-child { border-bottom: none; }
+        .result-row b { color: #fff; text-shadow: 0 0 8px rgba(255,42,133,0.4); }
+
+        /* Modern Toast Notification */
+        #toastContainer {
+            position: fixed; top: 25px; right: 25px; z-index: 10000;
+            display: flex; flex-direction: column; gap: 12px; pointer-events: none;
+        }
+        .custom-toast {
+            background: linear-gradient(135deg, rgba(28,28,39,0.95), rgba(20,20,28,0.98));
+            border: 1.5px solid #ff2a85; color: #fff; padding: 15px 22px; border-radius: 14px;
+            box-shadow: 0 0 25px rgba(255, 42, 133, 0.6);
+            display: flex; align-items: center; gap: 12px; pointer-events: auto;
+            animation: slideInToast 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            max-width: 380px; backdrop-filter: blur(8px);
+        }
+        .custom-toast.success { border-color: #2ecc71; box-shadow: 0 0 25px rgba(46, 204, 113, 0.6); }
+        .custom-toast.error { border-color: #ff4b4b; box-shadow: 0 0 25px rgba(255, 75, 75, 0.6); }
+        @keyframes slideInToast {
+            0% { opacity: 0; transform: translateX(100px) scale(0.9); }
+            100% { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        @keyframes fadeOutToast {
+            0% { opacity: 1; transform: translateX(0) scale(1); }
+            100% { opacity: 0; transform: translateX(50px) scale(0.9); }
+        }
+        .toast-icon { font-size: 1.3rem; }
+        .toast-message { font-size: 0.93rem; line-height: 1.4; color: #f1f1f6; }
+    </style>
+</head>
+<body>
+
+    <div class="galaxy-background" id="galaxyBg"></div>
+    <div id="toastContainer"></div>
+
+    <aside>
+        <div>
+            <div class="logo-area">
+                <div class="logo">Profit Mate</div>
+            </div>
+            <nav>
+                <a href="index.html.html">🏠 หน้าแรก</a>
+                <a href="calculator.html">📊 คำนวณต้นทุน</a>
+                <a href="delivery.html" class="active">🛵 เดลิเวอรี่ & GP</a>
+                <a href="recipes.html">📜 สูตรขนม & เครื่องดื่ม</a>
+                <a href="shopee.html">🛒 ลิงก์ตะกร้า Shopee</a>
+                <a href="history.html">📑 ประวัติสูตรของฉัน</a>
+            </nav>
+        </div>
+        <div class="sidebar-footer">&copy; 2026 Profit Mate Elite</div>
+    </aside>
+
+    <main>
+        <div class="calc-container">
+            <!-- หัวข้อหลักเดลิเวอรี่ พร้อมเอฟเฟกต์เส้นแสงวิ่งวนและขยับได้ -->
+            <div class="header-beam-box">
+                <div class="header-content-inner">
+                    <h1 class="main-header-title">🛵 คำนวณเดลิเวอรี่ & หัก GP แพลตฟอร์ม</h1>
+                    <p class="main-header-desc">วิเคราะห์ค่าไรสุทธิหลังหัก GP และค่ายิงแอดเดลิเวอรี่ พร้อมเส้นแสงนีออนวิ่งวนรอบกรอบสุดล้ำ</p>
+                </div>
+            </div>
+
+            <!-- เลือกแพลตฟอร์มเดลิเวอรี่ (ปรับดีไซน์ให้สวยเด่นครบทุกช่องแบบ Shopee) -->
+            <div class="platform-tabs">
+                <!-- GRAB -->
+                <div class="platform-tab active" id="tabGrab" onclick="selectPlatform('Grab', 30)">
+                    <div class="brand-logo-container">
+                        <!-- SVG โลโก้ Grab เขียวเด่นชัด -->
+                        <svg viewBox="0 0 24 24" width="40" height="40">
+                            <circle cx="12" cy="12" r="11" fill="#00B14F"/>
+                            <path d="M7 13.5l3.5 3.5 6.5-7" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>GRAB</h3>
+                    <span>GrabFood (30%)</span>
+                </div>
+
+                <!-- LINE MAN -->
+                <div class="platform-tab" id="tabLineman" onclick="selectPlatform('Lineman', 32)">
+                    <div class="brand-logo-container">
+                        <!-- SVG โลโก้ LINE MAN เขียวสะใจ -->
+                        <svg viewBox="0 0 24 24" width="40" height="40">
+                            <rect width="24" height="24" rx="6" fill="#00C73C"/>
+                            <path d="M12 5C7.58 5 4 8.13 4 12c0 2.21 1.05 4.18 2.69 5.51L6 20l3.08-1.03C9.9 19.31 10.92 19.5 12 19.5c4.42 0 8-3.13 8-7s-3.58-7-8-7z" fill="#fff"/>
+                        </svg>
+                    </div>
+                    <h3>LINE MAN</h3>
+                    <span>LINE MAN (32%)</span>
+                </div>
+
+                <!-- SHOPEEFOOD -->
+                <div class="platform-tab" id="tabShopee" onclick="selectPlatform('ShopeeFood', 35)">
+                    <div class="brand-logo-container">
+                        <!-- SVG โลโก้ Shopee ส้มสะดุดตา -->
+                        <svg viewBox="0 0 24 24" width="40" height="40">
+                            <rect width="24" height="24" rx="6" fill="#EE4D2D"/>
+                            <path d="M17.5 9h-2.13c-.23-1.55-1.55-2.75-3.13-2.75s-2.9 1.2-3.13 2.75H6.5v10.5h11V9zm-5.5-1.25c1.03 0 1.88.75 2.05 1.75H9.95c.17-1 1.02-1.75 2.05-1.75zm4.5 10.5H8V10.5h2v1.5h1.5v-1.5h3v1.5h1.5v-1.5h2v7.5z" fill="#fff"/>
+                        </svg>
+                    </div>
+                    <h3>SHOPEEFOOD</h3>
+                    <span>ShopeeFood (35%)</span>
+                </div>
+            </div>
+
+            <!-- ฟอร์มกรอกข้อมูล -->
+            <div class="section-box">
+                <div class="section-title">📝 ข้อมูลการขายบนแอป</div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="color: #aaa; font-size: 0.85rem; display: block; margin-bottom: 5px;">ราคาตั้งขายบนแอป (บาท)</label>
+                    <input type="number" id="appPrice" class="shopee-input" value="20" oninput="calculateDeliveryProfit()">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="color: #aaa; font-size: 0.85rem; display: block; margin-bottom: 5px;" id="importedCostLabel">ต้นทุนสินค้าจริงต่อชิ้น (บาท)</label>
+                    <input type="number" id="appCost" class="shopee-input" value="8.33" oninput="calculateDeliveryProfit()">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="color: #aaa; font-size: 0.85rem; display: block; margin-bottom: 5px;">งบยิงแอด / การตลาดต่อชิ้น (บาท)</label>
+                    <input type="number" id="appAds" class="shopee-input" value="0" oninput="calculateDeliveryProfit()">
+                </div>
+
+                <button class="btn-action" onclick="calculateDeliveryProfit()">📊 ประมวลผลคำนวณกำไรเดลิเวอรี่</button>
+            </div>
+
+            <!-- ผลวิเคราะห์กำไรบนแอป (มีเส้นแสงวิ่งวนรอบกรอบ) -->
+            <div class="result-sub-box chart-frame-glow" id="resultBox">
+                <div class="section-title" id="resultTitle">📈 ผลวิเคราะห์กำไรบนแอป (Grab GP 30%)</div>
+                
+                <div class="result-row">
+                    <span>ราคาตั้งขายบนแอป:</span>
+                    <b id="resAppPrice">20.00 บาท</b>
+                </div>
+                <div class="result-row">
+                    <span>หักค่า GP แพลตฟอร์ม (<span id="resGpPercent">30</span>%):</span>
+                    <b id="resGpAmount" style="color: #ff4b4b;">-6.00 บาท</b>
+                </div>
+                <div class="result-row">
+                    <span>รายรับหลังหัก GP:</span>
+                    <b id="resNetIncome">14.00 บาท</b>
+                </div>
+                <div class="result-row">
+                    <span>ต้นทุนสินค้าจริง:</span>
+                    <b id="resProductCost" style="color: #ff4b4b;">-8.33 บาท</b>
+                </div>
+                <div class="result-row">
+                    <span>งบตลาด/ยิงแอด:</span>
+                    <b id="resAdsCost" style="color: #ff4b4b;">-0.00 บาท</b>
+                </div>
+                <div class="result-row" style="border-top: 1.5px dashed rgba(255,255,255,0.2); margin-top: 5px; padding-top: 15px;">
+                    <span style="font-size: 1.1rem; color: #fff;">💰 กำไรสุทธิที่ได้รับ:</span>
+                    <b id="resNetProfit" style="font-size: 1.25rem; color: #2ecc71; text-shadow: 0 0 10px rgba(46,204,113,0.6);">5.67 บาท</b>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const galaxyBg = document.getElementById('galaxyBg');
+            
+            // สร้างดาวระยิบระยับปกติ
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                const size = Math.random() * 2.5 + 1;
+                star.style.width = `${size}px`; star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                galaxyBg.appendChild(star);
+            }
+
+            // สร้างดาวตก
+            for (let j = 0; j < 5; j++) {
+                const shootStar = document.createElement('div');
+                shootStar.className = 'shooting-star';
+                shootStar.style.left = `${Math.random() * 100}%`;
+                shootStar.style.top = `${Math.random() * 50}%`;
+                shootStar.style.width = `${Math.random() * 100 + 80}px`;
+                shootStar.style.setProperty('--shoot-duration', `${Math.random() * 3 + 2}s`);
+                shootStar.style.animationDelay = `${Math.random() * 8}s`;
+                galaxyBg.appendChild(shootStar);
+            }
+
+            // สร้างน้องกระต่าย
+            for (let k = 0; k < 4; k++) {
+                const bunny = document.createElement('div');
+                bunny.className = 'jumping-bunny';
+                bunny.innerHTML = '🐰';
+                bunny.style.left = `${Math.random() * 85 + 5}%`;
+                bunny.style.top = `${Math.random() * 80 + 10}%`;
+                bunny.style.setProperty('--jump-duration', `${Math.random() * 1.5 + 1.2}s`);
+                bunny.style.animationDelay = `${Math.random() * 2}s`;
+                galaxyBg.appendChild(bunny);
+            }
+
+            // ดึงข้อมูลต้นทุนที่ส่งมาจากหน้าคำนวณต้นทุน (ถ้ามี)
+            const transferredCost = localStorage.getItem('profitMateTransferCost');
+            if (transferredCost) {
+                document.getElementById('appCost').value = transferredCost;
+                document.getElementById('importedCostLabel').innerHTML = `ต้นทุนสินค้าจริงต่อชิ้น (บาท) <span style="color: #2ecc71;">(ดึงมาจากหน้าคำนวณต้นทุน: ${transferredCost} บาท)</span>`;
+                showToast(`ดึงต้นทุน ${transferredCost} บาท มาคำนวณเดลิเวอรี่สำเร็จ!`, "success");
+                localStorage.removeItem('profitMateTransferCost');
+            }
+
+            calculateDeliveryProfit();
+        });
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `custom-toast ${type}`;
+            const icon = type === 'success' ? '✨' : '⚠️';
+            toast.innerHTML = `<div class="toast-icon">${icon}</div><div class="toast-message">${message}</div>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'fadeOutToast 0.4s ease forwards';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        let currentPlatformName = 'Grab';
+        let currentGpRate = 30;
+
+        function selectPlatform(platformName, gpRate) {
+            currentPlatformName = platformName;
+            currentGpRate = gpRate;
+
+            document.querySelectorAll('.platform-tab').forEach(tab => tab.classList.remove('active'));
+            if (platformName === 'Grab') document.getElementById('tabGrab').classList.add('active');
+            if (platformName === 'Lineman') document.getElementById('tabLineman').classList.add('active');
+            if (platformName === 'ShopeeFood') document.getElementById('tabShopee').classList.add('active');
+
+            calculateDeliveryProfit();
+        }
+
+        function calculateDeliveryProfit() {
+            const price = parseFloat(document.getElementById('appPrice').value) || 0;
+            const cost = parseFloat(document.getElementById('appCost').value) || 0;
+            const ads = parseFloat(document.getElementById('appAds').value) || 0;
+
+            const gpAmount = price * (currentGpRate / 100);
+            const netIncome = price - gpAmount;
+            const netProfit = netIncome - cost - ads;
+
+            document.getElementById('resultTitle').textContent = `📈 ผลวิเคราะห์กำไรบนแอป (${currentPlatformName} GP ${currentGpRate}%)`;
+            document.getElementById('resAppPrice').textContent = `${price.toFixed(2)} บาท`;
+            document.getElementById('resGpPercent').textContent = currentGpRate;
+            document.getElementById('resGpAmount').textContent = `-${gpAmount.toFixed(2)} บาท`;
+            document.getElementById('resNetIncome').textContent = `${netIncome.toFixed(2)} บาท`;
+            document.getElementById('resProductCost').textContent = `-${cost.toFixed(2)} บาท`;
+            document.getElementById('resAdsCost').textContent = `-${ads.toFixed(2)} บาท`;
+            
+            const profitEl = document.getElementById('resNetProfit');
+            profitEl.textContent = `${netProfit.toFixed(2)} บาท`;
+            
+            if (netProfit < 0) {
+                profitEl.style.color = '#ff4b4b';
+                profitEl.style.textShadow = '0 0 10px rgba(255,75,75,0.6)';
+            } else {
+                profitEl.style.color = '#2ecc71';
+                profitEl.style.textShadow = '0 0 10px rgba(46,204,113,0.6)';
+            }
+        }
+    </script>
+</body>
+</html>
